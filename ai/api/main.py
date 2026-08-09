@@ -69,8 +69,8 @@ def _compute_embedding(img_pil: Image.Image, detection) -> list:
 @app.post("/embed", response_model=EmbeddingResponse)
 async def embed_photo(profile_photo: UploadFile = File(...)):
     """
-    Validates an uploaded image and, if accepted, computes and
-    returns its embedding — all in a single call.
+        Validates an uploaded image and, if accepted, computes and
+        returns its embedding — all in a single call.
     """
     try:
         contents = await profile_photo.read()
@@ -78,7 +78,8 @@ async def embed_photo(profile_photo: UploadFile = File(...)):
     except Exception:
         return EmbeddingResponse(
             accepted=False,
-            message="Could not read the uploaded file. Please make sure it is a valid image (jpg, jpeg, png, or webp).",
+            details="Could not read the uploaded file. Please make sure it is a valid image (jpg, jpeg, png, or webp).",
+            reason="invalid_file",
             face_count=0,
         )
 
@@ -87,7 +88,8 @@ async def embed_photo(profile_photo: UploadFile = File(...)):
     if not detection.success:
         return EmbeddingResponse(
             accepted=False,
-            message=detection.message,
+            details=detection.details,
+            reason=detection.reason,
             face_count=detection.face_count,
             confidence=detection.confidence,
         )
@@ -96,8 +98,10 @@ async def embed_photo(profile_photo: UploadFile = File(...)):
 
     return EmbeddingResponse(
         accepted=True,
-        message="Face validated and embedding computed successfully.",
+        details="Face validated and embedding computed successfully.",
+        reason=None,
         face_count=detection.face_count,
         confidence=detection.confidence,
         embedding=embedding,
     )
+
