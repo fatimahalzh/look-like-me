@@ -105,4 +105,4 @@ async def embed_photo(profile_photo: UploadFile = File(...)):
         embedding=embedding,
     )
 
-# trigger CI/CD test
+# trigger CI/CD test2
